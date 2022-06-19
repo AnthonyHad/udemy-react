@@ -3,47 +3,54 @@ import { useState } from 'react';
 import './ExpenseForm.css';
 
 const ExpenseForm = () => {
-  // const [enteredTitle, setEnteredTitle] = useState('');
-  // const [enteredAmount, setEnteredAmount] = useState('');
-  // const [enteredDate, setEnteredDate] = useState('');
+  const [enteredTitle, setEnteredTitle] = useState('');
+  const [enteredAmount, setEnteredAmount] = useState('');
+  const [enteredDate, setEnteredDate] = useState('');
 
   // When using '1' state for all we have to update all inputs all together
-  const [userInput, setUserInput] = useState({
-    enteredTitle: '',
-    enteredAmount: '',
-    enteredDate: '',
-  });
+  // const [userInput, setUserInput] = useState({
+  //   enteredTitle: '',
+  //   enteredAmount: '',
+  //   enteredDate: '',
+  // });
 
   const titleChangeHandler = (event) => {
-    // setEnteredTitle(event.target.value);
+    setEnteredTitle(event.target.value);
+
     //When state is updated React will not merge the old one with the new one,
-    //It will simply replace it
-    setUserInput({
-      // enteredAmount: '',
-      // enteredDate: '',
-      ...userInput,
-      enteredTitle: event.target.value,
-    });
+    //it will simply replace it
+    // setUserInput({
+    //   // enteredAmount: '',
+    //   // enteredDate: '',
+    //   ...userInput,
+    //   enteredTitle: event.target.value,
+    // });
+
+    // using the below approach guarantees we have the latest state from React
+    // To be used whenever we have to update a state which depends on the one befores
+    // setUserInput((prevState) => {
+    //   return { ...prevState, enteredTitle: event.target.value };
+    // });
   };
 
   const amountChangeHandler = (event) => {
-    setUserInput({
-      // enteredTitle: '',
-      // enteredDate: '',
-      ...userInput,
-      enteredAmount: event.target.value,
-    });
-    // setEnteredAmount(event.target.value);
+    setEnteredAmount(event.target.value);
+    // setUserInput({
+    //   // enteredTitle: '',
+    //   // enteredDate: '',
+    //   ...userInput,
+    //   enteredAmount: event.target.value,
+    // });
   };
 
   const dateChangeHandler = (event) => {
-    // setEnteredDate(event.target.value);
-    setUserInput({
-      // enteredTitle: '',
-      // enteredAmount: '',
-      ...userInput,
-      enteredDate: event.target.value,
-    });
+    setEnteredDate(event.target.value);
+    // setUserInput({
+    //   // enteredTitle: '',
+    //   // enteredAmount: '',
+    //   ...userInput,
+    //   enteredDate: event.target.value,
+    // });
   };
 
   return (
