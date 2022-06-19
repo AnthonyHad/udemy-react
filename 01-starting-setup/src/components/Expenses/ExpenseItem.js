@@ -1,9 +1,9 @@
 import ExpenseDate from './ExpenseDate';
-import Card from './Card';
+import Card from '../UI/Card';
 import './ExpenseItem.css';
 
 //props is an object which holds all the values we get for the attributes on our elements inside App for example
-function ExpenseItem(props) {
+const ExpenseItem = (props) => {
   //1 root element per return statement
   return (
     <Card className="expense-item">
@@ -14,6 +14,6 @@ function ExpenseItem(props) {
       </div>
     </Card>
   );
-}
+};
 
 export default ExpenseItem;
