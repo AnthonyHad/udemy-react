@@ -23,3 +23,7 @@
   width: 20rem;
   max-width: 100%;
 }
+
+.new-user__actions {
+  text-align: left;
+}
