@@ -1,10 +1,11 @@
 import React from 'react';
 
+import UserForm from './components/NewUser/UserForm';
 
 function App() {
   return (
     <div>
-
+      <UserForm />
     </div>
   );
 }
