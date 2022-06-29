@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import styles from './UserForm.module.css';
+import Card from '../UI/Card';
+import Button from '../UI/Button';
 
 const UserForm = () => {
   const [enteredUsername, setEnteredUsername] = useState('');
@@ -22,31 +24,35 @@ const UserForm = () => {
   };
 
   return (
-    <form onSubmit={submitHandler}>
-      <div className={styles['new-user__controls']}>
-        <div className={styles['new-user__control']}>
-          <label>Username</label>
-          <input
-            type="text"
-            value={enteredUsername}
-            onChange={usernameChangeHandler}
-          />
+    <Card>
+      <form onSubmit={submitHandler}>
+        <div className={styles['new-user__controls']}>
+          <div className={styles['new-user__control']}>
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              value={enteredUsername}
+              onChange={usernameChangeHandler}
+            />
+          </div>
+          <div className={styles['new-user__control']}>
+            <label htmlFor="age">Age(Years)</label>
+            <input
+              id="age"
+              type="number"
+              min="10"
+              step="1"
+              value={enteredAge}
+              onChange={ageChangeHandler}
+            />
+          </div>
+          <div className={styles['new-user__actions']}>
+            <Button type="submit">Add User</Button>
+          </div>
         </div>
-        <div className={styles['new-user__control']}>
-          <label>Age(Years)</label>
-          <input
-            type="number"
-            min="10"
-            step="1"
-            value={enteredAge}
-            onChange={ageChangeHandler}
-          />
-        </div>
-        <div className={styles['new-user__actions']}>
-          <button type="submit">Add User</button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </Card>
   );
 };
 
