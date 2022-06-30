@@ -16,10 +16,12 @@ function App() {
   };
 
   return (
-    <div>
+    //React Fragments which would replace wrapper component
+    // other syntax would be < React.Fragment> or named import Fragment
+    <>
       <UserForm onAddUser={addUserHandler} />
       <UsersList users={usersList} />
-    </div>
+    </>
   );
 }
 
