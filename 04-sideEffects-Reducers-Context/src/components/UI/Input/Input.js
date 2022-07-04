@@ -1,6 +1,20 @@
+import React, { useRef, useImperativeHandler } from 'react';
+
 import classes from './Input.module.css';
 
-const Input = (props) => {
+const Input = React.forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  const activate = () => {
+    inputRef.current.focus();
+  };
+
+  useImperativeHandler(ref, () => {
+    return {
+      focus: activate,
+    };
+  });
+
   return (
     <div
       className={`${classes.control} ${
@@ -9,6 +23,7 @@ const Input = (props) => {
     >
       <label htmlFor="email">{props.label}</label>
       <input
+        ref={inputRef}
         type="email"
         id={props.id}
         value={props.value}
@@ -17,6 +32,6 @@ const Input = (props) => {
       />
     </div>
   );
-};
+});
 
 export default Input;
