@@ -70,7 +70,7 @@ const Login = (props) => {
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log('checking form validity!');
-      setFormIsValid(emailIsValid, passwordIsValid);
+      setFormIsValid(emailIsValid && passwordIsValid);
     }, 500);
     //cleanup function
     //runs before every new side effect function
