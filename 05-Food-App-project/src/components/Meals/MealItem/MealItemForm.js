@@ -9,6 +9,7 @@ const MealItemForm = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
+    // the ref object always contains the current prop
     const enteredAmount = amountInputRef.current.value;
     const enteredAmountNumber = +enteredAmount;
     if (
