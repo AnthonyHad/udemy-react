@@ -15,6 +15,9 @@ function App() {
   const toggleParagraphHandler = useCallback(() => {
     // will store the constant value of the first run if we don't add the dependancy
     if (allowToggle) {
+      //updating state this way rules out state scheduling (also with useEffect)
+      // if we have two state update in the same function (in a synchronus process)
+      //react batches state updates
       setShowParagraph((prevShowParagraph) => !prevShowParagraph);
     }
   }, [allowToggle]);
