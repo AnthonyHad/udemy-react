@@ -4,9 +4,9 @@ import DemoOutput from './components/Demo/DemoOutput';
 import Button from './components/UI/Button/Button';
 import './App.css';
 
+//for every state change the affected component is re evaluated
+// even the children components and their children
 function App() {
-  //for every state change the affected component is re evaluated
-  // even the children components and their children
   const [showParagraph, setShowParagraph] = useState(false);
   const [allowToggle, setAllowToggle] = useState(false);
 
