@@ -18,14 +18,17 @@ function App() {
     isLoading,
     error,
     sendRequest: fetchTasks,
-  } = useHttp({
-    url: 'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
-    transformTasks,
-  });
+  } = useHttp(
+    {
+      url: 'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
+    },
+    transformTasks
+  );
 
   useEffect(() => {
     fetchTasks();
-  }, [fetchTasks]);
+    //adding fetchTasks as a dependancy would induce an infinite loop
+  }, []);
 
   const taskAddHandler = (task) => {
     setTasks((prevTasks) => prevTasks.concat(task));
