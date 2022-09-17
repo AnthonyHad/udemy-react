@@ -7,6 +7,7 @@ import classes from './AvailableMeals.module.css';
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [loading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
 
   const fetchMeals = async () => {
     setIsLoading(true);
@@ -32,6 +33,8 @@ const AvailableMeals = () => {
       setMeals(loadedMeals);
       setIsLoading(false);
     } catch (err) {
+      setIsLoading(false);
+      setHttpError(err.message);
       console.log(err);
     }
   };
@@ -44,6 +47,14 @@ const AvailableMeals = () => {
     return (
       <section className={classes.MealsLoading}>
         <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>
     );
   }
