@@ -18,6 +18,7 @@ export default BlogPostsPage;
 
 //This function is used inside the App folder which contains our routes
 // and is passed as a prop to the route which gets us here and then is passed to the component
+//no need to worry about the loading state because data is fetched behind the scenes
 export function loader() {
   return getPosts();
 }
