@@ -20,6 +20,7 @@ const AuthForm = () => {
     setIsLoading(true);
     if (isLogin) {
     } else {
+<<<<<<< HEAD
       fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?', {
         method: 'POST',
         body: JSON.stringify({
@@ -32,6 +33,22 @@ const AuthForm = () => {
         },
       }).then((res) => {
         setIsLoading(false);
+=======
+      fetch(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((res) => {
+>>>>>>> 94b98083526b6a88a70ee916c6bef7d100d12285
         if (res.ok) {
           //...
         } else {
