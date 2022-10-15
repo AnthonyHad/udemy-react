@@ -33,7 +33,7 @@ export async function getStaticPaths() {
   client.close();
 
   return {
-    fallback: false, // if set to true would help us to not pre generate all of our pages but just most of them
+    fallback: false, // if set to true would help us to not pre generate all of our pages but just most of them,'blocking'
     paths: meetups.map((meetup) => ({
       params: { meetupId: meetup._id.toString() },
     })),
