@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -8,22 +8,27 @@ const Ingredients = () => {
   const [ingredients, setIngredients] = useState([]);
 
   //Runs after and every render cycle
-  useEffect(() => {
-    fetch(
-      'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json'
-    )
-      .then((response) => response.json())
-      .then((responseData) => {
-        const loadedIngredients = [];
-        for (const key in responseData) {
-          loadedIngredients.push({
-            id: key,
-            title: responseData[key].title,
-            amount: responseData[key].amount,
-          });
-        }
-        setIngredients(loadedIngredients);
-      });
+  // useEffect(() => {
+  //   fetch(
+  //     'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json'
+  //   )
+  //     .then((response) => response.json())
+  //     .then((responseData) => {
+  //       const loadedIngredients = [];
+  //       for (const key in responseData) {
+  //         loadedIngredients.push({
+  //           id: key,
+  //           title: responseData[key].title,
+  //           amount: responseData[key].amount,
+  //         });
+  //       }
+  //       setIngredients(loadedIngredients);
+  //     });
+  // }, []);
+
+  //survives rerenders cycles
+  const filteredIngerdientsHandler = useCallback((filteredIngerdients) => {
+    setIngredients(filteredIngerdients);
   }, []);
 
   const addIngredientHandler = (ingredient) => {
@@ -57,7 +62,7 @@ const Ingredients = () => {
       <IngredientForm onAddIngredient={addIngredientHandler} />
 
       <section>
-        <Search />
+        <Search onLoadIngredients={filteredIngerdientsHandler} />
         <IngredientList
           ingredients={ingredients}
           onRemoveItem={removeIngredientHandler}
