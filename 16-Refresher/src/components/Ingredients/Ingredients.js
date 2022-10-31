@@ -117,10 +117,10 @@ const Ingredients = () => {
       });
   }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     //react batches state updates and will update them once per cycle
     dispatchHttp({ action: 'CLEAR' });
-  };
+  }, []);
 
   const ingredientList = useMemo(() => {
     return (
