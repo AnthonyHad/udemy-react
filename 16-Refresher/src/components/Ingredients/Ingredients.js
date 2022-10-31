@@ -52,9 +52,16 @@ const Ingredients = () => {
   };
 
   const removeIngredientHandler = (ingredientId) => {
-    setIngredients((prevIngredients) =>
-      prevIngredients.filter((el) => el.id !== ingredientId)
-    );
+    fetch(
+      `https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`,
+      {
+        method: 'DELETE',
+      }
+    ).then((response) => {
+      setIngredients((prevIngredients) =>
+        prevIngredients.filter((el) => el.id !== ingredientId)
+      );
+    });
   };
 
   return (
