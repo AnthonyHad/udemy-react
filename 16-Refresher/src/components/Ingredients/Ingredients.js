@@ -1,10 +1,11 @@
-import React, { useReducer, useCallback, useState } from 'react';
+import React, { useReducer, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
 import ErrorModal from '../UI/ErrorModal';
 import Search from './Search';
 
+//can be used for cleaner code or for states which are interconnected
 const ingredientReducer = (currentIngredients, action) => {
   switch (action.type) {
     case 'SET':
@@ -18,11 +19,30 @@ const ingredientReducer = (currentIngredients, action) => {
   }
 };
 
+const httpReducer = (curhttpState, action) => {
+  switch (action.type) {
+    case 'SEND':
+      return { loading: true, error: null };
+    case 'RESPONSE':
+      return { ...curhttpState, loading: false };
+    case 'ERROR':
+      return { loading: false, error: action.errorData };
+    case 'CLEAR':
+      return { ...curhttpState, error: null };
+    default:
+      throw new Error('Should not be reached');
+  }
+};
+
 const Ingredients = () => {
   const [ingredients, dispatch] = useReducer(ingredientReducer, []);
+  const [httpState, dispatchHttp] = useReducer(httpReducer, {
+    loading: false,
+    error: null,
+  });
   // const [ingredients, setIngredients] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState();
 
   //Runs after and every render cycle
   // useEffect(() => {
@@ -50,7 +70,7 @@ const Ingredients = () => {
   }, []);
 
   const addIngredientHandler = (ingredient) => {
-    setIsLoading(true);
+    dispatchHttp({ type: 'SEND' });
     fetch(
       'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json',
       {
@@ -60,7 +80,7 @@ const Ingredients = () => {
       }
     )
       .then((response) => {
-        setIsLoading(false);
+        dispatchHttp({ type: 'RESPONSE' });
         return response.json();
       })
       .then((responseData) => {
@@ -76,7 +96,7 @@ const Ingredients = () => {
   };
 
   const removeIngredientHandler = (ingredientId) => {
-    setIsLoading(true);
+    dispatch({ type: 'RESPONSE' });
     fetch(
       `https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`,
       {
@@ -84,29 +104,32 @@ const Ingredients = () => {
       }
     )
       .then((response) => {
-        setIsLoading(false);
+        dispatch({ type: 'RESPONSE' });
         // setIngredients((prevIngredients) =>
         //   prevIngredients.filter((el) => el.id !== ingredientId)
         // )
         dispatch({ type: 'DELETE', id: ingredientId });
       })
       .catch((e) => {
-        setError('Something went wrong!');
-        setIsLoading(false);
+        dispatch({ type: 'ERROR', error: 'Something went wrong' });
+        // setError('Something went wrong!');
+        // setIsLoading(false);
       });
   };
 
   const clearError = () => {
     //react batches state updates and will update them once per cycle
-    setError(null);
+    dispatchHttp({ action: 'CLEAR' });
   };
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+      {httpState.erorr && (
+        <ErrorModal onClose={clearError}>{httpState.error}</ErrorModal>
+      )}
       <IngredientForm
         onAddIngredient={addIngredientHandler}
-        loading={isLoading}
+        loading={httpState.loading}
       />
 
       <section>
