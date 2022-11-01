@@ -1,9 +1,10 @@
-import React, { useReducer, useCallback, useMemo } from 'react';
+import React, { useReducer, useCallback, useMemo, useEffect } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
 import ErrorModal from '../UI/ErrorModal';
 import Search from './Search';
+import useHttp from '../../hooks/http';
 
 //can be used for cleaner code or for states which are interconnected
 const ingredientReducer = (currentIngredients, action) => {
@@ -19,27 +20,18 @@ const ingredientReducer = (currentIngredients, action) => {
   }
 };
 
-const httpReducer = (curhttpState, action) => {
-  switch (action.type) {
-    case 'SEND':
-      return { loading: true, error: null };
-    case 'RESPONSE':
-      return { ...curhttpState, loading: false };
-    case 'ERROR':
-      return { loading: false, error: action.errorData };
-    case 'CLEAR':
-      return { ...curhttpState, error: null };
-    default:
-      throw new Error('Should not be reached');
-  }
-};
-
 const Ingredients = () => {
   const [ingredients, dispatch] = useReducer(ingredientReducer, []);
-  const [httpState, dispatchHttp] = useReducer(httpReducer, {
-    loading: false,
-    error: null,
-  });
+  const {
+    isLoading,
+    error,
+    data,
+    sendRequest,
+    reqExtra,
+    reqIdentifier,
+    clear,
+  } = useHttp(); //sets up state and function
+
   // const [ingredients, setIngredients] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState();
@@ -63,64 +55,77 @@ const Ingredients = () => {
   //     });
   // }, []);
 
+  useEffect(() => {
+    if (!isLoading && !error && reqIdentifier === 'REMOVE_INGREDIENT') {
+      dispatch({ type: 'DELETE', id: reqExtra });
+    } else if (!isLoading && !error && reqIdentifier === 'ADD_INGREDIENT') {
+      dispatch({
+        type: 'ADD',
+        ingredient: { id: data.name, ...reqExtra },
+      });
+    }
+  }, [data, reqExtra, reqIdentifier, isLoading, error]);
+
   //survives rerenders cycles
   const filteredIngerdientsHandler = useCallback((filteredIngerdients) => {
     // setIngredients(filteredIngerdients);
     dispatch({ type: 'SET', ingredients: filteredIngerdients });
   }, []);
 
-  const addIngredientHandler = useCallback((ingredient) => {
-    dispatchHttp({ type: 'SEND' });
-    fetch(
-      'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json',
-      {
-        method: 'POST',
-        body: JSON.stringify(ingredient),
-        headers: { 'Content-Type': 'application/json' },
-      }
-    )
-      .then((response) => {
-        dispatchHttp({ type: 'RESPONSE' });
-        return response.json();
-      })
-      .then((responseData) => {
-        // setIngredients((prevIngredients) => [
-        //   ...prevIngredients,
-        //   { id: responseData.name, ...ingredient },
-        // ]);
-        dispatch({
-          type: 'ADD',
-          ingredient: { id: responseData.name, ...ingredient },
-        });
-      });
-  }, []);
+  const addIngredientHandler = useCallback(
+    (ingredient) => {
+      sendRequest(
+        'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json',
+        'POST',
+        JSON.stringify(ingredient),
+        ingredient,
+        'ADD_INGREDIENT'
+      );
 
-  const removeIngredientHandler = useCallback((ingredientId) => {
-    dispatch({ type: 'RESPONSE' });
-    fetch(
-      `https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`,
-      {
-        method: 'DELETE',
-      }
-    )
-      .then((response) => {
-        dispatch({ type: 'RESPONSE' });
-        // setIngredients((prevIngredients) =>
-        //   prevIngredients.filter((el) => el.id !== ingredientId)
-        // )
-        dispatch({ type: 'DELETE', id: ingredientId });
-      })
-      .catch((e) => {
-        dispatch({ type: 'ERROR', error: 'Something went wrong' });
-        // setError('Something went wrong!');
-        // setIsLoading(false);
-      });
-  }, []);
+      // dispatchHttp({ type: 'SEND' });
+      // fetch(
+      //   'https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json',
+      //   {
+      //     method: 'POST',
+      //     body: JSON.stringify(ingredient),
+      //     headers: { 'Content-Type': 'application/json' },
+      //   }
+      // )
+      //   .then((response) => {
+      //     dispatchHttp({ type: 'RESPONSE' });
+      //     return response.json();
+      //   })
+      //   .then((responseData) => {
+      //     // setIngredients((prevIngredients) => [
+      //     //   ...prevIngredients,
+      //     //   { id: responseData.name, ...ingredient },
+      //     // ]);
+      //     dispatch({
+      //       type: 'ADD',
+      //       ingredient: { id: responseData.name, ...ingredient },
+      //     });
+      // });
+    },
+    [sendRequest]
+  );
 
-  const clearError = useCallback(() => {
-    //react batches state updates and will update them once per cycle
-    dispatchHttp({ action: 'CLEAR' });
-  }, []);
+  const removeIngredientHandler = useCallback(
+    (ingredientId) => {
+      sendRequest(
+        `https://react-http-b1771-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`,
+        'DELETE',
+        null,
+        ingredientId,
+        'REMOVE_INGREDIENT'
+      );
+    },
+    [sendRequest]
+  );
+
+  // const clearError = useCallback(() => {
+  //   //react batches state updates and will update them once per cycle
+  //   // dispatchHttp({ action: 'CLEAR' });
+  // }, []);
 
   const ingredientList = useMemo(() => {
     return (
@@ -133,12 +138,10 @@ const Ingredients = () => {
 
   return (
     <div className="App">
-      {httpState.erorr && (
-        <ErrorModal onClose={clearError}>{httpState.error}</ErrorModal>
-      )}
+      {error && <ErrorModal onClose={clear}>{error}</ErrorModal>}
       <IngredientForm
         onAddIngredient={addIngredientHandler}
-        loading={httpState.loading}
+        loading={isLoading}
       />
 
       <section>
